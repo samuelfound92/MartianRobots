@@ -67,5 +67,26 @@ namespace MartianRobots.Tests
             //Assert
             Assert.Equal(expectedEndDirection, robot.Direction);
         }
+
+        [Theory]
+        [InlineData(Direction.North, 1, 0, 1)]
+        [InlineData(Direction.East, 3, 3, 0)]
+        [InlineData(Direction.South, 2, 0, -2)]
+        [InlineData(Direction.West, 15, -15, 0)]
+        public void WhenMovingForward_ShouldHaveCorrectPosition(Direction startingDirection, int numberOfMovesForward, int expectedXPosition, int expectedYPosition) 
+        {
+            //Arrange
+            var robot = new Robot(direction: startingDirection);
+
+            //Act
+            for (int i = 0; i < numberOfMovesForward; i++)
+            {
+                robot.MoveForward();
+            }
+
+            //Assert
+            Assert.Equal(expectedXPosition, robot.XPosition);
+            Assert.Equal(expectedYPosition, robot.YPosition);
+        }
     }
 }

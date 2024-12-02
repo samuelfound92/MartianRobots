@@ -46,6 +46,23 @@ namespace MartianRobots
 
             return Direction;
         }
+
+        public (int xPosition, int yPosition) MoveForward()
+        {
+            // Update position based on current direction
+            (XPosition, YPosition) = Direction switch
+            {
+                Direction.North => (XPosition, YPosition + 1), // Move up
+                Direction.East => (XPosition + 1, YPosition), // Move right
+                Direction.South => (XPosition, YPosition - 1), // Move down
+                Direction.West => (XPosition - 1, YPosition), // Move left
+                _ => throw new NotImplementedException($"Direction {Direction} is not supported")
+            };
+
+            return (XPosition, YPosition); // Return updated position
+        }
+
+
     }
 
     public enum Direction
