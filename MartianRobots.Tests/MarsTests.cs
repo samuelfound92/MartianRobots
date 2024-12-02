@@ -9,6 +9,7 @@ namespace MartianRobots.Tests
     public class MarsTests
     {
         [Theory]
+        [InlineData(0, 0)]
         [InlineData(1, 1)]
         [InlineData(20, 30)]
         [InlineData(Mars.MAX_UPPER_LIMIT, Mars.MAX_UPPER_LIMIT)]
@@ -25,6 +26,8 @@ namespace MartianRobots.Tests
         [Theory]
         [InlineData(Mars.MAX_UPPER_LIMIT, Mars.MAX_UPPER_LIMIT + 1)]
         [InlineData(Mars.MAX_UPPER_LIMIT + 1, Mars.MAX_UPPER_LIMIT)]
+        [InlineData(Mars.LOWER_LIMIT, Mars.LOWER_LIMIT - 1)]
+        [InlineData(Mars.LOWER_LIMIT - 1, Mars.LOWER_LIMIT)]
         public void WhenConstructingWithTooLargeUpperLimits_ShouldThrowError(int x_UpperLimit, int y_UpperLimit)
         {
             //Arrange
