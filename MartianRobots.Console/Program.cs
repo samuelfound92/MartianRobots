@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using MartianRobots;
 
 namespace MartianRobotsApp
 {
     class Program
     {
-        const string  ROBOT_SETUP_PROMPT = "Enter robot position and direction (e.g., 1 1 E):";
+        const string ROBOT_SETUP_PROMPT = "Enter robot position and direction (e.g., 1 1 E):";
 
         static void Main(string[] args)
         {
@@ -141,11 +140,11 @@ namespace MartianRobotsApp
                 var outcome = mars.ExecuteCommand(command);
                 if (outcome == RobotCommandOutcome.RobotHasDied)
                 {
-                    return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {mars.Robot.Direction} LOST";
+                    return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {GetAbbreviatedDirection(mars.Robot.Direction)} LOST";
                 }
             }
 
-            return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {mars.Robot.Direction}";
+            return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {GetAbbreviatedDirection(mars.Robot.Direction)}";
         }
 
         // Attempts to parse robot movement commands ('F', 'L', 'R')
@@ -160,6 +159,19 @@ namespace MartianRobotsApp
             };
 
             return input is 'F' or 'L' or 'R';
+        }
+
+        // Converts full direction name to abbreviated direction (e.g., "North" -> "N")
+        private static string GetAbbreviatedDirection(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.North => "N",
+                Direction.East => "E",
+                Direction.South => "S",
+                Direction.West => "W",
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }
