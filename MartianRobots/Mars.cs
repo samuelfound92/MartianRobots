@@ -75,7 +75,6 @@ namespace MartianRobots
         private void RecordRobotDeath()
         {
             RobotGraves.Add((Robot.XPosition, Robot.YPosition));
-            Robot = new Robot(); // Reset the robot
         }
 
         private bool CanMoveForward => !IsOnGraveSite || IsNextPositionSafe;
