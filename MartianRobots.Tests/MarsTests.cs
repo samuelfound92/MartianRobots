@@ -36,5 +36,20 @@ namespace MartianRobots.Tests
             //Assert
             Assert.Throws<ArgumentOutOfRangeException>(constructMars);
         }
+
+        [Theory]
+        [InlineData(11, 10)]
+        [InlineData(-1, 2)]
+        public void WhenCheckingAnOutOfRangeCoordinate_ShouldBeFlaggedAsSuch(int x, int y) 
+        {
+            //Arrange
+            var mars = new Mars(10, 10);
+
+            //Act
+            var isValid = mars.CheckCoordinatesAreValid(x, y);
+
+            //Assert
+            Assert.False(isValid);
+        }
     }
 }

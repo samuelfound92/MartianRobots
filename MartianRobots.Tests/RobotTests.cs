@@ -88,5 +88,23 @@ namespace MartianRobots.Tests
             Assert.Equal(expectedXPosition, robot.XPosition);
             Assert.Equal(expectedYPosition, robot.YPosition);
         }
+
+        [Theory]
+        [InlineData(0, 0, Direction.North)]
+        [InlineData(1, 1, Direction.East)]
+        [InlineData(1, 2, Direction.South)]
+        [InlineData(2, 2, Direction.West)]
+        public void WhenCheckingNextPosition_ShouldEqualTheMovedPosition(int xPosition, int yPosition, Direction direction) 
+        {
+            //Arrange
+            var robot = new Robot(xPosition, yPosition, direction);
+            var previewCoordinates = robot.GetNextPosition();
+
+            //Act
+            var finalCoordinates = robot.MoveForward();
+
+            //Assert
+            Assert.Equal(finalCoordinates, previewCoordinates);
+        }
     }
 }

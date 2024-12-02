@@ -29,5 +29,32 @@ namespace MartianRobots
 
             return limit;
         }
+
+        public bool CheckCoordinatesAreValid(int xCoordinate, int yCoordinate)
+        {
+            try 
+            {
+                ValidateCoordinate(xCoordinate, X_UpperLimit);
+                ValidateCoordinate(yCoordinate, Y_UpperLimit);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static int ValidateCoordinate(int coordinate, int upperLimit)
+        {
+            if (coordinate < LOWER_LIMIT || coordinate > upperLimit)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"The coordinate is invalid. {LOWER_LIMIT} - {upperLimit} is the accepted range."
+                );
+            }
+
+            return coordinate;
+        }
     }
 }

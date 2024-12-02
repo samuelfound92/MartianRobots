@@ -32,19 +32,27 @@ namespace MartianRobots
         public (int xPosition, int yPosition) MoveForward()
         {
             // Update position based on current direction
-            (XPosition, YPosition) = Direction switch
-            {
-                Direction.North => (XPosition, YPosition + 1), // Move up
-                Direction.East => (XPosition + 1, YPosition), // Move right
-                Direction.South => (XPosition, YPosition - 1), // Move down
-                Direction.West => (XPosition - 1, YPosition), // Move left
-                _ => throw new NotImplementedException($"Direction {Direction} is not supported")
-            };
-
+            (XPosition, YPosition) = GetNextPosition();
             return (XPosition, YPosition); // Return updated position
         }
 
 
+        /// <summary>
+        /// Calculate the next position based on the current direction
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public (int xPosition, int yPosition) GetNextPosition()
+        {
+            return Direction switch
+            {
+                Direction.North => (XPosition, YPosition + 1), // Tile above
+                Direction.East => (XPosition + 1, YPosition), // Tile to the right
+                Direction.South => (XPosition, YPosition - 1), // Tile below
+                Direction.West => (XPosition - 1, YPosition), // Tile to the left
+                _ => throw new NotImplementedException($"Direction {Direction} is not supported")
+            };
+        }
     }
 
     public enum Direction
