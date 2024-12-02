@@ -15,6 +15,12 @@ namespace MartianRobots
         public int X_UpperLimit { get; private set; } = ValidateLimit(x_UpperLimit, nameof(x_UpperLimit));
         public int Y_UpperLimit { get; private set; } = ValidateLimit(y_UpperLimit, nameof(y_UpperLimit));
 
+        public Robot BuildRobot(int xPosition, int yPosition, Direction direction) 
+        { 
+            Robot = new Robot(xPosition, yPosition, direction);
+            return Robot;
+        }
+
         private static int ValidateLimit(int limit, string paramName)
         {
             if (limit < LOWER_LIMIT || limit > MAX_UPPER_LIMIT)
