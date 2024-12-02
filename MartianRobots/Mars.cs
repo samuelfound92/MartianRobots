@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MartianRobots
 {
     public class Mars(int x_UpperLimit, int y_UpperLimit)
     {
-        /// <summary>
-        /// Neither of the upper limits should be above this value
-        /// </summary>
         public const int MAX_UPPER_LIMIT = 50;
         public const int LOWER_LIMIT = 0;
 
-        public int X_UpperLimit { get; set; } = ValidateLimit(x_UpperLimit, nameof(x_UpperLimit));
-        public int Y_UpperLimit { get; set; } = ValidateLimit(y_UpperLimit, nameof(y_UpperLimit));
+        private Robot Robot { get; set; } = new Robot();
+        public List<(int x, int y)> RobotGraves { get; private set; } = [];
+
+        public int X_UpperLimit { get; private set; } = ValidateLimit(x_UpperLimit, nameof(x_UpperLimit));
+        public int Y_UpperLimit { get; private set; } = ValidateLimit(y_UpperLimit, nameof(y_UpperLimit));
 
         private static int ValidateLimit(int limit, string paramName)
         {
@@ -26,35 +24,79 @@ namespace MartianRobots
                     $"The {paramName} is invalid. {LOWER_LIMIT} - {MAX_UPPER_LIMIT} is the accepted range."
                 );
             }
-
             return limit;
         }
 
         public bool CheckCoordinatesAreValid(int xCoordinate, int yCoordinate)
         {
-            try 
-            {
-                ValidateCoordinate(xCoordinate, X_UpperLimit);
-                ValidateCoordinate(yCoordinate, Y_UpperLimit);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return false;
-            }
-
-            return true;
+            return xCoordinate >= LOWER_LIMIT && xCoordinate <= X_UpperLimit &&
+                   yCoordinate >= LOWER_LIMIT && yCoordinate <= Y_UpperLimit;
         }
 
-        private static int ValidateCoordinate(int coordinate, int upperLimit)
+        public RobotCommandOutcome ExecuteCommand(RobotCommand command)
         {
-            if (coordinate < LOWER_LIMIT || coordinate > upperLimit)
+            return command switch
             {
-                throw new ArgumentOutOfRangeException(
-                    $"The coordinate is invalid. {LOWER_LIMIT} - {upperLimit} is the accepted range."
-                );
-            }
-
-            return coordinate;
+                RobotCommand.Forward => MoveRobotForward(),
+                RobotCommand.TurnLeft => PerformRotation(Robot.TurnLeft),
+                RobotCommand.TurnRight => PerformRotation(Robot.TurnRight),
+                _ => throw new NotImplementedException($"Command {command} is not recognized.")
+            };
         }
+
+        private static RobotCommandOutcome PerformRotation(Func<Direction> rotationMethod)
+        {
+            rotationMethod();
+            return RobotCommandOutcome.Succeeded;
+        }
+
+        private RobotCommandOutcome MoveRobotForward()
+        {
+            if (!CanMoveForward) return RobotCommandOutcome.Rejected;
+
+            if (IsNextPositionSafe)
+            {
+                Robot.MoveForward();
+                return RobotCommandOutcome.Succeeded;
+            }
+            else
+            {
+                RecordRobotDeath();
+                return RobotCommandOutcome.RobotHasDied;
+            }
+        }
+
+        private void RecordRobotDeath()
+        {
+            RobotGraves.Add((Robot.XPosition, Robot.YPosition));
+            Robot = new Robot(); // Reset the robot
+        }
+
+        private bool CanMoveForward => !IsOnGraveSite || IsNextPositionSafe;
+
+        private bool IsNextPositionSafe
+        {
+            get
+            {
+                var (xPosition, yPosition) = Robot.GetNextPosition();
+                return CheckCoordinatesAreValid(xPosition, yPosition);
+            }
+        }
+
+        private bool IsOnGraveSite => RobotGraves.Contains((Robot.XPosition, Robot.YPosition));
+    }
+
+    public enum RobotCommand
+    {
+        Forward,
+        TurnLeft,
+        TurnRight,
+    }
+
+    public enum RobotCommandOutcome
+    {
+        Succeeded,
+        Rejected,
+        RobotHasDied,
     }
 }

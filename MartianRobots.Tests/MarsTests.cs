@@ -51,5 +51,19 @@ namespace MartianRobots.Tests
             //Assert
             Assert.False(isValid);
         }
+
+        [Fact]
+        public void WhenRobotGoesOutOfBounds_ShouldBeGivenAGraveSite() 
+        {
+            //Arrange
+            var mars = new Mars(0, 0);
+
+            //Act
+            var outcome = mars.ExecuteCommand(RobotCommand.Forward);
+
+            //Assert
+            Assert.Single(mars.RobotGraves);
+            Assert.Equal(RobotCommandOutcome.RobotHasDied, outcome);
+        }
     }
 }
