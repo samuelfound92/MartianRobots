@@ -9,7 +9,7 @@ namespace MartianRobots
         public const int MAX_UPPER_LIMIT = 50;
         public const int LOWER_LIMIT = 0;
 
-        private Robot Robot { get; set; } = new Robot();
+        public Robot Robot { get; private set; } = new Robot();
         public List<(int x, int y)> RobotGraves { get; private set; } = [];
 
         public int X_UpperLimit { get; private set; } = ValidateLimit(x_UpperLimit, nameof(x_UpperLimit));
