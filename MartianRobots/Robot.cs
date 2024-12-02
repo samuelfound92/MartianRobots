@@ -21,12 +21,30 @@ namespace MartianRobots
 
         public Direction TurnRight()
         {
-            return Direction++;
+            if (Direction == Direction.West)
+            {
+                Direction = Direction.North;
+            }
+            else
+            {
+                Direction++;
+            }
+
+            return Direction;
         }
 
         public Direction TurnLeft()
         {
-            return Direction--;
+            if (Direction == Direction.North)
+            {
+                Direction = Direction.West;
+            }
+            else
+            {
+                Direction--;
+            }
+
+            return Direction;
         }
     }
 
