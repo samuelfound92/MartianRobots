@@ -1,87 +1,116 @@
 ﻿using System;
+using System.Collections.Generic;
 using MartianRobots;
 
-class Program
+namespace MartianRobotsApp
 {
-    static void Main(string[] args)
+    class Program
     {
-        Console.WriteLine("Welcome to Martian Robots!");
-        Console.WriteLine("Enter Mars grid upper limits (e.g., 5 5 for a 5x5 grid):");
-
-        // Read and parse grid upper limits
-        var limits = Console.ReadLine()?.Split(' ');
-        if (limits == null || limits.Length != 2 ||
-            !int.TryParse(limits[0], out int xUpper) ||
-            !int.TryParse(limits[1], out int yUpper))
+        static void Main(string[] args)
         {
-            Console.WriteLine("Invalid input. Exiting.");
-            return;
-        }
+            Console.WriteLine("Enter the upper-right coordinates of the rectangular grid (e.g., 5 3):");
+            var gridInput = Console.ReadLine()?.Split(' ');
 
-        try
-        {
-            Mars mars = new Mars(xUpper, yUpper);
-
-            Console.WriteLine("Mars grid initialized.");
-            Console.WriteLine("Commands: Forward (F), Turn Left (L), Turn Right (R), Exit (E)");
-
-            bool running = true;
-
-            while (running)
+            if (!IsValidGridInput(gridInput, out int xUpperLimit, out int yUpperLimit))
             {
-                Console.WriteLine($"Current Robot Position: ({mars.Robot.XPosition}, {mars.Robot.YPosition}), Facing: {mars.Robot.Direction}");
-                Console.WriteLine("Enter command string (e.g., FFLR) or E to exit:");
+                Console.WriteLine("Invalid grid size input. Exiting.");
+                return;
+            }
 
-                var commandsInput = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(commandsInput) || commandsInput.Equals("E", StringComparison.CurrentCultureIgnoreCase))
+            Mars mars = new(xUpperLimit, yUpperLimit);
+
+            Console.WriteLine("Enter robot positions and instructions (type 'END' to finish input):");
+
+            string robotInput;
+            while (!string.IsNullOrWhiteSpace(robotInput = Console.ReadLine()) && robotInput.ToUpper() != "END")
+            {
+                var positionParts = robotInput.Split(' ');
+                if (!IsValidPositionInput(positionParts, mars, out int xPosition, out int yPosition, out Direction direction))
                 {
-                    running = false;
-                    break;
+                    Console.WriteLine("Invalid robot position input. Skipping...");
+                    continue;
                 }
 
-                foreach (var commandChar in commandsInput.ToUpper())
+                string instructions = Console.ReadLine();
+                if (!IsValidInstructionInput(instructions))
                 {
-                    if (!TryParseCommand(commandChar, out RobotCommand command))
-                    {
-                        Console.WriteLine($"Invalid command '{commandChar}'. Skipping.");
-                        continue;
-                    }
+                    Console.WriteLine("Invalid robot instructions. Skipping...");
+                    continue;
+                }
 
-                    var outcome = mars.ExecuteCommand(command);
+                mars.BuildRobot(xPosition, yPosition, direction);
+                string result = ProcessRobotCommands(mars, instructions);
+                Console.WriteLine(result);
+            }
 
-                    // Handle different outcomes
-                    switch (outcome)
-                    {
-                        case RobotCommandOutcome.Succeeded:
-                            Console.WriteLine($"Command '{command}' executed successfully.");
-                            break;
-                        case RobotCommandOutcome.Rejected:
-                            Console.WriteLine($"Command '{command}' was rejected (robot at grave or invalid move).");
-                            break;
-                        case RobotCommandOutcome.RobotHasDied:
-                            Console.WriteLine("The robot has fallen off the grid and was reset to the starting position.");
-                            break;
-                    }
+            Console.WriteLine("Processing complete.");
+        }
+
+        private static bool IsValidGridInput(string[] gridInput, out int x, out int y)
+        {
+            x = y = 0;
+
+            if (gridInput == null || gridInput.Length != 2 ||
+                !int.TryParse(gridInput[0], out x) || !int.TryParse(gridInput[1], out y))
+                return false;
+
+            return x >= 0 && x <= Mars.MAX_UPPER_LIMIT && y >= 0 && y <= Mars.MAX_UPPER_LIMIT;
+        }
+
+        private static bool IsValidPositionInput(string[] positionInput, Mars mars, out int x, out int y, out Direction direction)
+        {
+            x = y = 0;
+            direction = Direction.North;
+
+            if (positionInput.Length != 3 ||
+                !int.TryParse(positionInput[0], out x) ||
+                !int.TryParse(positionInput[1], out y) ||
+                !Enum.TryParse(positionInput[2], true, out direction) ||
+                !mars.CheckCoordinatesAreValid(x, y))
+                return false;
+
+            return true;
+        }
+
+        private static bool IsValidInstructionInput(string instructions)
+        {
+            if (string.IsNullOrWhiteSpace(instructions) || instructions.Length > 100)
+                return false;
+
+            return true;
+        }
+
+        private static string ProcessRobotCommands(Mars mars, string instructions)
+        {
+            foreach (char commandChar in instructions)
+            {
+                if (!TryParseCommand(commandChar, out RobotCommand command))
+                {
+                    Console.WriteLine($"Invalid command '{commandChar}'. Ignoring.");
+                    continue;
+                }
+
+                var outcome = mars.ExecuteCommand(command);
+                if (outcome == RobotCommandOutcome.RobotHasDied)
+                {
+                    return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {mars.Robot.Direction} LOST";
                 }
             }
 
-            Console.WriteLine("Thank you for using Martian Robots!");
+            return $"{mars.Robot.XPosition} {mars.Robot.YPosition} {mars.Robot.Direction}";
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-    }
 
-    private static bool TryParseCommand(char input, out RobotCommand command)
-    {
-        command = input switch
+        private static bool TryParseCommand(char input, out RobotCommand command)
         {
-            'F' => RobotCommand.Forward,
-            'L' => RobotCommand.TurnLeft,
-            'R' => RobotCommand.TurnRight,
-            _ => RobotCommand.Forward // Default; we validate invalid commands separately
-        };
-        return input is 'F' or 'L' or 'R';
+            command = input switch
+            {
+                'F' => RobotCommand.Forward,
+                'L' => RobotCommand.TurnLeft,
+                'R' => RobotCommand.TurnRight,
+                _ => RobotCommand.Forward // Default case
+            };
+
+            return input is 'F' or 'L' or 'R';
+        }
     }
 }
