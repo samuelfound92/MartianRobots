@@ -6,18 +6,11 @@ using System.Threading.Tasks;
 
 namespace MartianRobots
 {
-    public class Robot
+    public class Robot(int xPosition = 0, int yPosition = 0, Direction direction = Direction.North)
     {
-        public int XPosition { get; private set; }
-        public int YPosition { get; private set; }
-        public Direction Direction { get; private set; }
-
-        public Robot(int xPosition = 0, int yPosition = 0, Direction direction = Direction.North)
-        {
-            XPosition = xPosition;
-            YPosition = yPosition;
-            Direction = direction;
-        }
+        public int XPosition { get; private set; } = xPosition;
+        public int YPosition { get; private set; } = yPosition;
+        public Direction Direction { get; private set; } = direction;
 
         public Direction TurnRight()
         {
