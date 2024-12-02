@@ -6,6 +6,8 @@ namespace MartianRobotsApp
 {
     class Program
     {
+        const string  ROBOT_SETUP_PROMPT = "Enter robot position and direction (e.g., 1 1 E):";
+
         static void Main(string[] args)
         {
             // Step 1: Input for the grid size
@@ -21,7 +23,7 @@ namespace MartianRobotsApp
             Mars mars = new(xUpperLimit, yUpperLimit);
 
             // Step 2: Input for robot positions and instructions
-            Console.WriteLine("Enter robot positions and instructions one at a time:");
+            Console.WriteLine(ROBOT_SETUP_PROMPT);
 
             string robotInput;
             while (!string.IsNullOrWhiteSpace(robotInput = Console.ReadLine()))
@@ -38,6 +40,7 @@ namespace MartianRobotsApp
                 mars.BuildRobot(xPosition, yPosition, direction);
 
                 // Step 3: Input for movement instructions
+                Console.WriteLine("Enter robotInstructions (e.g., RFRFRFRF):");
                 string instructions = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(instructions) || !IsValidInstructionInput(instructions))
                 {
@@ -48,6 +51,7 @@ namespace MartianRobotsApp
                 // Process the robot commands
                 string result = ProcessRobotCommands(mars, instructions);
                 Console.WriteLine(result);
+                Console.WriteLine(ROBOT_SETUP_PROMPT);
             }
 
             Console.WriteLine("Processing complete.");
