@@ -21,29 +21,18 @@ namespace MartianRobots
 
         public Direction TurnRight()
         {
-            if (Direction == Direction.West)
-            {
-                Direction = Direction.North;
-            }
-            else
-            {
-                Direction++;
-            }
-
-            return Direction;
+            return Rotate(1); // Rotate clockwise
         }
 
         public Direction TurnLeft()
         {
-            if (Direction == Direction.North)
-            {
-                Direction = Direction.West;
-            }
-            else
-            {
-                Direction--;
-            }
+            return Rotate(-1); // Rotate counterclockwise
+        }
 
+        private Direction Rotate(int step)
+        {
+            int directionCount = Enum.GetValues(typeof(Direction)).Length; // Get the total number of directions
+            Direction = (Direction)(((int)Direction + step + directionCount) % directionCount); // Ensure circular rotation
             return Direction;
         }
 
